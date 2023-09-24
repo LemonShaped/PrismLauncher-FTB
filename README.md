@@ -1,3 +1,15 @@
+# PrismLauncher+FTB
+
+Fork of PrismLauncher with FTB modpack support added back.
+
+_this is a fork and is not affiliated with or endorsed by PrismLauncher_
+
+​
+
+-----------
+
+​
+
 <p align="center">
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="/program_info/org.prismlauncher.PrismLauncher.logo-darkmode.svg">
