@@ -57,7 +57,6 @@
 
 #include "ui/pages/modplatform/CustomPage.h"
 #include "ui/widgets/PageContainer.h"
-#include "ui/pages/modplatform/VanillaPage.h"
 #include "ui/pages/modplatform/atlauncher/AtlPage.h"
 #include "ui/pages/modplatform/ftb/FtbPage.h"
 #include "ui/pages/modplatform/legacy_ftb/Page.h"
