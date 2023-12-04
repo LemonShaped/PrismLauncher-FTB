@@ -46,6 +46,8 @@
 #include "net/ChecksumValidator.h"
 #include "settings/INISettingsObject.h"
 
+#include "net/ApiDownload.h"
+
 #include "Application.h"
 #include "BuildConfig.h"
 #include "ui/dialogs/BlockedModsDialog.h"
@@ -90,7 +92,7 @@ void PackInstallTask::executeTask()
     auto netJob = makeShared<NetJob>("ModpacksCH::VersionFetch", APPLICATION->network());
 
     auto searchUrl = QString(BuildConfig.MODPACKSCH_API_BASE_URL + "public/modpack/%1/%2").arg(m_pack.id).arg(version.id);
-    netJob->addNetAction(Net::Download::makeByteArray(QUrl(searchUrl), &m_response));
+    netJob->addNetAction(Net::ApiDownload::makeByteArray(QUrl(searchUrl), m_response));
 
     QObject::connect(netJob.get(), &NetJob::succeeded, this, &PackInstallTask::onManifestDownloadSucceeded);
     QObject::connect(netJob.get(), &NetJob::failed, this, &PackInstallTask::onManifestDownloadFailed);
@@ -108,11 +110,11 @@ void PackInstallTask::onManifestDownloadSucceeded()
     m_net_job.reset();
 
     QJsonParseError parse_error{};
-    QJsonDocument doc = QJsonDocument::fromJson(m_response, &parse_error);
+    QJsonDocument doc = QJsonDocument::fromJson(*m_response, &parse_error);
     if (parse_error.error != QJsonParseError::NoError) {
         qWarning() << "Error while parsing JSON response from ModpacksCH at " << parse_error.offset
                    << " reason: " << parse_error.errorString();
-        qWarning() << m_response;
+        qWarning() << *m_response.get();
         return;
     }
 
@@ -304,7 +306,7 @@ void PackInstallTask::downloadPack()
 
         QFileInfo file_info(file.name);
 
-        auto dl = Net::Download::makeFile(file.url, path);
+        auto dl = Net::ApiDownload::makeFile(file.url, path);
         if (!file.sha1.isEmpty()) {
             auto rawSha1 = QByteArray::fromHex(file.sha1.toLatin1());
             dl->addValidator(new Net::ChecksumValidator(QCryptographicHash::Sha1, rawSha1));
