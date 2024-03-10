@@ -494,8 +494,7 @@ Application::Application(int& argc, char** argv) : QApplication(argc, argv)
     }
 
     {
-        qDebug() << qPrintable(BuildConfig.LAUNCHER_DISPLAYNAME) << ", (c) 2022-2023 "
-                 << qPrintable(QString(BuildConfig.LAUNCHER_COPYRIGHT).replace("\n", ", "));
+        qDebug() << qPrintable(BuildConfig.LAUNCHER_DISPLAYNAME + ", " + QString(BuildConfig.LAUNCHER_COPYRIGHT).replace("\n", ", "));
         qDebug() << "Version                    : " << BuildConfig.printableVersionString();
         qDebug() << "Platform                   : " << BuildConfig.BUILD_PLATFORM;
         qDebug() << "Git commit                 : " << BuildConfig.GIT_COMMIT;
@@ -748,6 +747,9 @@ Application::Application(int& argc, char** argv) : QApplication(argc, argv)
         }
         m_settings->registerSetting("ModrinthToken", "");
         m_settings->registerSetting("UserAgentOverride", "");
+
+        // FTBApp instances
+        m_settings->registerSetting("FTBAppInstancesPath", "");
 
         // Init page provider
         {
@@ -1511,6 +1513,17 @@ InstanceWindow* Application::showInstanceWindow(InstancePtr instance, QString pa
     auto& window = extras.window;
 
     if (window) {
+// If the window is minimized on macOS or Windows, activate and bring it up
+#ifdef Q_OS_MACOS
+        if (window->isMinimized()) {
+            window->setWindowState(window->windowState() & ~Qt::WindowMinimized);
+        }
+#elif defined(Q_OS_WIN)
+        if (window->isMinimized()) {
+            window->showNormal();
+        }
+#endif
+
         window->raise();
         window->activateWindow();
     } else {
@@ -1518,6 +1531,7 @@ InstanceWindow* Application::showInstanceWindow(InstancePtr instance, QString pa
         m_openWindows++;
         connect(window, &InstanceWindow::isClosing, this, &Application::on_windowClose);
     }
+
     if (!page.isEmpty()) {
         window->selectPage(page);
     }
