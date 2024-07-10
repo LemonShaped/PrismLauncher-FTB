@@ -256,7 +256,7 @@ void PackInstallTask::createInstance()
         if (target.type != "modloader")
             continue;
         
-        if (target.name == "neoforged"){
+        if (target.name == "neoforge"){
             components->setComponentVersion("net.neoforged", target.version);
         } else if (target.name == "forge") {
             components->setComponentVersion("net.minecraftforge", target.version);
