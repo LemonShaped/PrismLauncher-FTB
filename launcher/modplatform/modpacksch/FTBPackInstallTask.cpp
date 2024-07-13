@@ -255,8 +255,10 @@ void PackInstallTask::createInstance()
     for (auto target : m_version.targets) {
         if (target.type != "modloader")
             continue;
-
-        if (target.name == "forge") {
+        
+        if (target.name == "neoforge"){
+            components->setComponentVersion("net.neoforged", target.version);
+        } else if (target.name == "forge") {
             components->setComponentVersion("net.minecraftforge", target.version);
         } else if (target.name == "fabric") {
             components->setComponentVersion("net.fabricmc.fabric-loader", target.version);
